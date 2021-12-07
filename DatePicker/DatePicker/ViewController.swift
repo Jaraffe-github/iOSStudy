@@ -10,8 +10,8 @@ import UIKit
 class ViewController: UIViewController {
     let timeSelector: Selector = #selector(ViewController.updateTime)
     let interval = 1.0
-    var count = 0
-    
+    var alarmConfirmd = false
+    var timeConfirmd: String = ""
     var alarmTime: String = ""
     
     @IBOutlet var lblCurrentTime: UILabel!
@@ -25,9 +25,6 @@ class ViewController: UIViewController {
     }
     
     @objc func updateTime() {
-        // lblCurrentTime.text = String(count)
-        // count = count + 1
-        
         let date = NSDate()
         
         let formatter = DateFormatter()
@@ -35,13 +32,23 @@ class ViewController: UIViewController {
         lblCurrentTime.text = "현재시간 : " + formatter.string(from: date as Date)
         
         formatter.dateFormat = "yyyy-MM-dd HH:mm EEE"
-        if alarmTime == formatter.string(from: date as Date)
-        {
-            self.view.backgroundColor = UIColor.red
+        if alarmConfirmd {
+            if timeConfirmd != formatter.string(from: date as Date) {
+                alarmConfirmd = false
+            }
         }
-        else
-        {
-            self.view.backgroundColor = UIColor.white
+        
+        if alarmConfirmd == false {
+            if alarmTime == formatter.string(from: date as Date)
+            {
+                let alert = UIAlertController(title: "알림", message: "설정된 시간입니다 !!!", preferredStyle: UIAlertController.Style.alert)
+                let confirmAction = UIAlertAction(title: "네, 알겠습니다.", style: UIAlertAction.Style.default) {
+                    ACTION in self.alarmConfirmd = true
+                    self.timeConfirmd = self.alarmTime
+                }
+                alert.addAction(confirmAction)
+                present(alert, animated: true, completion: nil)
+            }
         }
     }
 
